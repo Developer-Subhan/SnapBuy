@@ -30,7 +30,7 @@ export default function EditProductForm() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/products/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
         
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
@@ -108,7 +108,7 @@ export default function EditProductForm() {
     };
 
     try {
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

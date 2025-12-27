@@ -38,7 +38,7 @@ export default function ProductDetailPage() {
 
     async function fetchData() {
       try {
-        const productRes = await fetch(`http://localhost:5000/products/${id}`, { signal });
+        const productRes = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, { signal });
         
         if (!productRes.ok) {
           if (productRes.status === 404) return navigate("/404");
@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

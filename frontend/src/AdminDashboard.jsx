@@ -141,7 +141,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch('http://localhost:5000/orders', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
                     credentials: 'include' 
                 }); 
                 
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
     }, [setError]);
 
     const handleUpdateOrderStatus = async (orderId, newStatus) => {
-        const response = await fetch(`http://localhost:5000/orders/${orderId}/status`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${orderId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

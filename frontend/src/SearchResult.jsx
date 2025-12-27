@@ -79,7 +79,7 @@ export default function SearchResult() {
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/products?search=${query || ""}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/products?search=${query || ""}`);
         const data = await response.json();
         setProducts(data);
       } catch (err) {

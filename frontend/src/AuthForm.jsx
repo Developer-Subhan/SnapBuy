@@ -44,7 +44,7 @@ export default function AuthForm() {
     setIsLoading(true);
 
     const isLogin = activeTab === "login";
-    const url = `http://localhost:5000/${isLogin ? "login" : "register"}`;
+    const url = `${import.meta.env.VITE_API_URL}/${isLogin ? "login" : "register"}`;
 
     const payload = isLogin 
       ? { username: formData.loginUsername, password: formData.loginPassword } 

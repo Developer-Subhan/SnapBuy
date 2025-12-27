@@ -33,7 +33,7 @@ export default function OrderStatusTracker() {
         const timeoutId = setTimeout(() => controller.abort(), 8000); 
 
         try {
-            const response = await fetch(`http://localhost:5000/api/order-status/${cleanOrderId}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/order-status/${cleanOrderId}`, {
                 signal: controller.signal
             });
             
