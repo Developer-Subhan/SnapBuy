@@ -54,7 +54,7 @@ export default function ProductDetailPage() {
         if (data?.colors?.length > 0) setSelectedColor(data.colors[0].name);
         const initialSize = data?.sizes?.find((size) => size.inStock);
         if (initialSize) setSelectedSize(initialSize.name);
-        const authRes = await fetch("http://localhost:5000/check-auth", {
+        const authRes = await fetch(`${import.meta.env.VITE_API_URL}/check-auth`, {
           credentials: "include",
           signal,
         });

@@ -32,7 +32,7 @@ export default function Navbar() {
   useEffect(() => {
     async function fetchAuth() {
       try {
-        const res = await fetch("http://localhost:5000/check-auth", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/check-auth`, {
           credentials: "include",
         });
         if (res.ok) {
@@ -173,7 +173,7 @@ export default function Navbar() {
                     
                     <button
                       onClick={async () => {
-                        await fetch("http://localhost:5000/logout", { credentials: "include" });
+                        await fetch(`${import.meta.env.VITE_API_URL}/logout", { credentials: "include` });
                         window.location.href = "/";
                       }}
                       className="group flex items-center gap-2 px-3 py-2 rounded-xl text-indigo-300 hover:text-red-500 hover:bg-red-50 transition-all duration-300"

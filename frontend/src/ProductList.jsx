@@ -89,7 +89,7 @@ export default function ProductList() {
     if (!isRetry) setLoading(true);
     
     try {
-      const res = await fetch("http://localhost:5000/products");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
       if (!res.ok) throw new Error(`Server status: ${res.status}`);
       
       const data = await res.json();
