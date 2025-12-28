@@ -6,7 +6,7 @@ const passport = require("passport");
 const helmet = require("helmet");
 const User = require("./models/User");
 const LocalStrategy = require("passport-local");
-const MongoStore = require("connect-mongo");
+const {MongoStore} = require("connect-mongo");
 
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
