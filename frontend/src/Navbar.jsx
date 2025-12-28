@@ -105,7 +105,7 @@ export default function Navbar() {
                 <Link to="/" className="ml-2 lg:ml-0 transition-transform active:scale-95">
                   <img 
                     alt="Logo" 
-                    src="\photo.png" 
+                    src="/photo.png" 
                     className="h-16 w-auto object-contain sm:h-24 sm:scale-110" 
                   />
                 </Link>
