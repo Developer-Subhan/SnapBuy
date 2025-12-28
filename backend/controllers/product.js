@@ -1,7 +1,7 @@
 const Product = require("../models/Product");
 module.exports.getAllProducts = async (req, res, next) => {
   try {
-    const { search } = req.query;
+    const { q } = req.query;
     let filter = {};
 
     if (search && search !== "null" && search !== "") {
