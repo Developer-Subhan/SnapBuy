@@ -1,13 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const app = express();
 const session = require("express-session");
 const passport = require("passport");
+const helmet = require("helmet");
 const User = require("./models/User");
 const LocalStrategy = require("passport-local");
 const { isLoggedIn, isAdmin } = require("./middleware");
-const helmet = require("helmet");
 
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
@@ -16,18 +15,44 @@ const authRoutes = require("./routes/auth");
 
 require('dotenv').config();
 
-mongoose
-  .connect(process.env.DB_URL)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+const app = express();
+
+let cachedConnection = null;
+
+const connectDB = async () => {
+  if (cachedConnection) return cachedConnection;
+
+  const dbUrl = process.env.DB_URL || process.env.MONGO_URI; 
+
+  if (!dbUrl) return;
+
+  try {
+    const conn = await mongoose.connect(dbUrl, {
+      bufferCommands: false,
+    });
+    cachedConnection = conn;
+    return conn;
+  } catch (err) {
+    process.exit(1);
+  }
+};
+
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: process.env.FRONTEND_URL || "https://snapbuy-7662.vercel.app",
   credentials: true
 }));
 
 app.use(express.json());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+
+app.set("trust proxy", 1); 
 
 const sessionOption = {
   secret: process.env.SESSION_SECRET || "fallbacksecret",
@@ -37,8 +62,8 @@ const sessionOption = {
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     maxAge: 1000 * 60 * 60 * 24 * 7,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
   }
 };
 
