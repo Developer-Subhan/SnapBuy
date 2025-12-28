@@ -21,11 +21,8 @@ let cachedConnection = null;
 
 const connectDB = async () => {
   if (cachedConnection) return cachedConnection;
-
   const dbUrl = process.env.DB_URL; 
-
   if (!dbUrl) return;
-
   try {
     const conn = await mongoose.connect(dbUrl, {
       bufferCommands: false,
@@ -42,19 +39,20 @@ app.use(async (req, res, next) => {
   next();
 });
 
-
+const fourteenDaysInSeconds = 14 * 24 * 60 * 60;
 
 const store = MongoStore.create({
   mongoUrl: process.env.DB_URL,
   crypto: {
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "fallbacksecret",
   },
-  touchAfter: 24*3600,
+  touchAfter: 24 * 3600,
+  ttl: fourteenDaysInSeconds
 });
 
-store.on("error", (e)=>{
-console.log("Error in mongo store",e);
-})
+store.on("error", (e) => {
+  console.log("Error in mongo store", e);
+});
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || "https://snapbuy-7662.vercel.app",
@@ -74,8 +72,7 @@ const sessionOption = {
   resave: false,
   saveUninitialized: false,
   cookie: {
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    maxAge: fourteenDaysInSeconds * 1000,
     httpOnly: true,
     secure: true,
     sameSite: "none",
