@@ -22,7 +22,7 @@ let cachedConnection = null;
 const connectDB = async () => {
   if (cachedConnection) return cachedConnection;
 
-  const dbUrl = process.env.DB_URL || process.env.MONGO_URI; 
+  const dbUrl = process.env.DB_URL; 
 
   if (!dbUrl) return;
 
