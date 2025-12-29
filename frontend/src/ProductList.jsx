@@ -3,13 +3,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
-import { Heart, Eye, AlertCircle, RefreshCcw } from "lucide-react";
+import { Heart, Eye, AlertCircle, RefreshCcw, SearchX, ArrowLeft } from "lucide-react";
 import Loader from "./Loader";
 import { useError } from "./ErrorContext";
 
 const GridItem = ({ item }) => {
   const [isHovered, setIsHovered] = useState(false);
-  
   if (!item) return null;
 
   return (
@@ -32,7 +31,6 @@ const GridItem = ({ item }) => {
               e.target.src = "https://placehold.co/400x500/f8fafc/64748b?text=Image+Error";
             }}
           />
-
           <AnimatePresence>
             {isHovered && (
               <motion.div
@@ -56,14 +54,9 @@ const GridItem = ({ item }) => {
             )}
           </AnimatePresence>
         </div>
-
         <div className="p-6">
-          <h3 className="text-lg font-bold text-slate-900 truncate tracking-tight">
-            {item.name || "Unnamed Product"}
-          </h3>
-          <p className="text-slate-500 font-medium text-sm">
-            {item.category || "Collection"}
-          </p>
+          <h3 className="text-lg font-bold text-slate-900 truncate tracking-tight">{item.name || "Unnamed Product"}</h3>
+          <p className="text-slate-500 font-medium text-sm">{item.category || "Collection"}</p>
         </div>
       </Link>
     </motion.div>
@@ -75,31 +68,26 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
   const { setError } = useError();
   const [searchParams] = useSearchParams();
+  const query = searchParams.get('q') || '';
 
   const fetchProducts = useCallback(async (isRetry = false) => {
     if (!isRetry) setLoading(true);
-
     try {
-      const q = searchParams.get('q') || '';
-      const url = q ? `${import.meta.env.VITE_API_URL}/products?q=${encodeURIComponent(q)}` : `${import.meta.env.VITE_API_URL}/products`;
+      const url = query 
+        ? `${import.meta.env.VITE_API_URL}/products?q=${encodeURIComponent(query)}` 
+        : `${import.meta.env.VITE_API_URL}/products`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Server status: ${res.status}`);
-
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Fetch failed:", err);
-
       if (!isRetry) {
-          setError({
-            message: err.message || "An unexpected error occurred",
-            status: "Offline"
-          });
+          setError({ message: err.message || "An unexpected error occurred", status: "Offline" });
       }
     } finally {
       setLoading(false);
     }
-  }, [setError, searchParams]);
+  }, [setError, query]);
 
   useEffect(() => {
     fetchProducts();
@@ -108,19 +96,60 @@ export default function ProductList() {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-slate-50/30">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        {products.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-500 text-lg">No products found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((item) => (
-              <GridItem key={item._id || Math.random()} item={item} />
-            ))}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {products.length === 0 ? (
+            <motion.div 
+              key="empty-state"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center justify-center min-h-[60vh] text-center"
+            >
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
+                <div className="relative bg-white border border-slate-100 p-8 rounded-[3rem] shadow-2xl shadow-slate-200/50">
+                  <SearchX className="text-slate-900 w-16 h-16 stroke-[1.5]" />
+                </div>
+              </div>
+              
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-4">
+                {query ? `No results for "${query}"` : "The store is quiet today"}
+              </h2>
+              
+              <p className="text-slate-500 max-w-sm mb-10 font-medium leading-relaxed">
+                We couldn't find what you're looking for. Try a different search term or explore our core collection.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link 
+                  to="/" 
+                  className="flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-indigo-600 transition-all active:scale-95 shadow-xl shadow-slate-200"
+                >
+                  <ArrowLeft size={18} /> Return Home
+                </Link>
+                <button 
+                  onClick={() => fetchProducts()}
+                  className="flex items-center justify-center gap-2 px-8 py-4 bg-white border border-slate-200 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all active:scale-95"
+                >
+                  <RefreshCcw size={18} /> Refresh Store
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="product-grid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+            >
+              {products.map((item) => (
+                <GridItem key={item._id || Math.random()} item={item} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
