@@ -99,7 +99,7 @@ export default function ProductList() {
       console.error("Fetch failed:", err);
       
       if (!isRetry) {
-          setError({ message: "We're having trouble reaching the store. Check your connection.", status: "Offline" });
+          setError({ message: err, status: "Offline" });
       }
     } finally {
       setLoading(false);
