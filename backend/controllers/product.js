@@ -1,27 +1,25 @@
 const Product = require("../models/Product");
 module.exports.getAllProducts = async (req, res, next) => {
   try {
-    const { q } = req.query;
+    const { q: search } = req.query; 
+
     let filter = {};
 
-    if (q && q !== "null" && q !== "") {
-      const searchRegex = new RegExp(q, "i");
+    if (search && search !== "null" && search !== "") {
+      const searchRegex = new RegExp(String(search), "i");
+      
       filter = {
         $or: [
           { name: searchRegex },
           { description: searchRegex },
           { category: searchRegex },
-          { highlights: searchRegex },
-          { "colors.name": searchRegex },
-          { "sizes.name": searchRegex }
+          { highlights: searchRegex }
         ]
       };
     }
 
     const products = await Product.find(filter);
-
-
-res.status(200).json(products);
+    res.status(200).json(products || []);
 
   } catch (err) {
     next(err); 
