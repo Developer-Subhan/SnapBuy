@@ -4,8 +4,8 @@ module.exports.getAllProducts = async (req, res, next) => {
     const { q } = req.query;
     let filter = {};
 
-    if (search && search !== "null" && search !== "") {
-      const searchRegex = new RegExp(search, "i");
+    if (q && q !== "null" && q !== "") {
+      const searchRegex = new RegExp(q, "i");
       filter = {
         $or: [
           { name: searchRegex },
