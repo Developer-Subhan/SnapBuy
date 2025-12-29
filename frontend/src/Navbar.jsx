@@ -15,7 +15,7 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import CartDrawer from "./CartDrawer.jsx";
 
 const navigation = {
