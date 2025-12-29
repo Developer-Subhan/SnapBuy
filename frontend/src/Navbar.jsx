@@ -26,7 +26,6 @@ export default function Navbar() {
   const [loggedIn, setLoggedIn] = useState(null);
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,13 +48,7 @@ export default function Navbar() {
     fetchAuth();
   }, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
-    }
-  };
+ 
 
   const isAdmin = loggedIn && user?.username === "admin";
 
@@ -144,18 +137,15 @@ export default function Navbar() {
 
               <div className="h-8 w-[1px] bg-indigo-100 hidden sm:block" />
 
-              <form onSubmit={handleSearch} className="relative flex items-center group">
+              
                 <input
                   type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..." 
                   className="w-0 opacity-0 group-hover:w-44 focus:w-44 group-hover:opacity-100 focus:opacity-100 transition-all duration-500 rounded-xl bg-indigo-50/50 px-4 py-2 text-sm outline-none border border-transparent focus:border-indigo-200"
                 />
                 <button type="submit" className="p-2 text-indigo-400 hover:text-indigo-600 transition-colors">
                   <MagnifyingGlassIcon className="size-6 stroke-[2]" />
                 </button>
-              </form>
 
               <div className="flex items-center gap-2">
                 {loggedIn === false ? (

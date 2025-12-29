@@ -7,7 +7,6 @@ import {
 import { ErrorProvider } from "./ErrorContext.jsx";
 import Homepage from "./Homepage.jsx";
 import ProductDetailPage from "./ProductDetailPage.jsx";
-import SearchResult from "./SearchResult.jsx";
 import Loader from "./Loader.jsx";
 import ErrorPage from "./ErrorPage.jsx";
 import NotFound from "./NotFound.jsx";
@@ -60,7 +59,6 @@ function App() {
       errorElement: <ErrorPage />,
       children: [
         { path: "/", element: <Homepage /> },
-        { path: "/products", element: <SearchResult.jsx /> },
         { path: "/products/:id", element: <ProductDetailPage /> },
         { path: "/auth", element: <AuthForm /> },
         { path: "/order-success", element: <OrderSuccess /> },
