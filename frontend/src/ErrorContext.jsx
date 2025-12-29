@@ -10,7 +10,7 @@ export const ErrorProvider = () => {
   const resetError = () => setError(null);
 
   return (
-    <ErrorContext.Provider value={{ setError }}>
+    <ErrorContext.Provider value={{ error, setError }}>
       {error ? (
         <ErrorPage error={error} resetError={resetError} />
       ) : (

@@ -83,7 +83,7 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
-  const { setError } = useError();
+  const { error, setError } = useError();
 
   const fetchProducts = useCallback(async (isRetry = false) => {
     if (!isRetry) setLoading(true);
@@ -97,8 +97,8 @@ export default function ProductList() {
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Fetch failed:", err);
-      
-      if (!isRetry) {
+
+      if (!isRetry && !error) {
           setError({ message: err, status: "Offline" });
       }
     } finally {
