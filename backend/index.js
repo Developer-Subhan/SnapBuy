@@ -6,7 +6,7 @@ const passport = require("passport");
 const helmet = require("helmet");
 const User = require("./models/User");
 const LocalStrategy = require("passport-local");
-const {MongoStore} = require("connect-mongo");
+const { MongoStore } = require("connect-mongo");
 
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
@@ -21,12 +21,10 @@ let cachedConnection = null;
 
 const connectDB = async () => {
   if (cachedConnection) return cachedConnection;
-  const dbUrl = process.env.DB_URL; 
+  const dbUrl = process.env.DB_URL;
   if (!dbUrl) return;
   try {
-    const conn = await mongoose.connect(dbUrl, {
-      bufferCommands: false,
-    });
+    const conn = await mongoose.connect(dbUrl, { bufferCommands: false });
     cachedConnection = conn;
     return conn;
   } catch (err) {
@@ -43,28 +41,29 @@ const fourteenDaysInSeconds = 14 * 24 * 60 * 60;
 
 const store = MongoStore.create({
   mongoUrl: process.env.DB_URL,
-  crypto: {
-    secret: process.env.SESSION_SECRET || "fallbacksecret",
-  },
+  crypto: { secret: process.env.SESSION_SECRET || "fallbacksecret" },
   touchAfter: 24 * 3600,
   ttl: fourteenDaysInSeconds
 });
 
-store.on("error", (e) => {
-  console.log("Error in mongo store", e);
-});
+store.on("error", (e) => console.log("Error in mongo store", e));
 
+const whitelist = [process.env.FRONTEND_URL];
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: function (origin, callback) {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
 app.use(express.json());
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
-app.set("trust proxy", 1); 
+app.set("trust proxy", 1);
 
 const sessionOption = {
   store,
@@ -105,10 +104,10 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || 'Something went wrong!';
-    console.log(err);
-    res.status(statusCode).json({ message, error: err.name });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Something went wrong!';
+  console.log(err);
+  res.status(statusCode).json({ message, error: err.name });
 });
 
 module.exports = app;
