@@ -50,19 +50,18 @@ store.on("error", (e) => console.log("Error in mongo store", e));
 
 const whitelist = [
   process.env.FRONTEND_URL,
-  "http://localhost:5173" // include for development if using Vite
+  "http://localhost:5173" // for dev
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (origin && whitelist.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
+    if (!origin) return callback(null, true);
+    if (whitelist.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
   },
   credentials: true
 }));
+
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
