@@ -48,10 +48,14 @@ const store = MongoStore.create({
 
 store.on("error", (e) => console.log("Error in mongo store", e));
 
-const whitelist = [process.env.FRONTEND_URL];
+const whitelist = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173" // include for development if using Vite
+];
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || whitelist.includes(origin)) {
+    if (origin && whitelist.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -59,6 +63,14 @@ app.use(cors({
   },
   credentials: true
 }));
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && !whitelist.includes(origin)) {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(helmet({ contentSecurityPolicy: false }));
