@@ -49,20 +49,19 @@ const store = MongoStore.create({
 store.on("error", (e) => console.log("Error in mongo store", e));
 
 const whitelist = [
-  process.env.FRONTEND_URL,
-  "http://localhost:5173" // dev URL
+  "https://snapbuy-main.vercel.app",
+  "http://localhost:5173" // optional, for dev
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(new Error("Not allowed by CORS")); // block Postman / curl
+    if (!origin) return callback(new Error("Not allowed by CORS")); // blocks Postman/curl
     if (whitelist.includes(origin)) return callback(null, true); // allow frontend
     callback(new Error("Not allowed by CORS"));
   },
   credentials: true
 }));
 
-// Extra check for requests without Origin
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (!origin || !whitelist.includes(origin)) {
@@ -70,6 +69,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+
 
 
 app.use(express.json());
