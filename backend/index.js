@@ -55,7 +55,7 @@ store.on("error", (e) => {
 });
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "https://snapbuy-ebon.vercel.app",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
