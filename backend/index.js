@@ -50,22 +50,29 @@ store.on("error", (e) => console.log("Error in mongo store", e));
 
 const whitelist = [
   "https://snapbuy-main.vercel.app",
-  "http://localhost:5173" // optional for dev
+  "http://localhost:5173"
 ];
 
+// 1. Configure CORS
 app.use(cors({
   origin: function (origin, callback) {
-    if (whitelist.includes(origin)) return callback(null, true);
-    callback(new Error("Not allowed by CORS"));
+    // Allow requests with no origin (like mobile apps or curl) 
+    // OR if the origin is in our whitelist
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
   },
   credentials: true
 }));
 
-// Block all requests without whitelist origin
+// 2. Modified Hard Block (Optional)
+// If you want to keep the 403 manual block, allow undefined origins 
+// to prevent blocking legitimate browser-to-Vercel traffic.
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log("Request origin:", origin);
-  if (!origin || !whitelist.includes(origin)) {
+  if (origin && !whitelist.includes(origin)) {
     return res.status(403).json({ message: "Access denied" });
   }
   next();
