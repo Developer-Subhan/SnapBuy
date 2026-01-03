@@ -6,7 +6,7 @@ const passport = require("passport");
 const helmet = require("helmet");
 const User = require("./models/User");
 const LocalStrategy = require("passport-local");
-const MongoStore = require("connect-mongo");
+const { MongoStore } = require("connect-mongo");
 
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
@@ -39,15 +39,18 @@ app.use(async (req, res, next) => {
 
 const whitelist = ["https://snapbuy-main.vercel.app", "http://localhost:5173"];
 
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+//   if (req.method === "OPTIONS") return next();
+//   if (!origin || !whitelist.includes(origin)) {
+//     return res.status(403).json({ message: "Access Denied: Unauthorized Request Source" });
+//   }
+//   next();
+// });
+
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || whitelist.some(url => origin.startsWith(url))) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
+  origin: whitelist,
+  credentials: false,
 }));
 
 app.use(express.json());
@@ -73,7 +76,7 @@ const sessionOption = {
     maxAge: fourteenDaysInSeconds * 1000,
     httpOnly: true,
     secure: true,
-    sameSite: "none",
+    sameSite: "lax",
   }
 };
 
