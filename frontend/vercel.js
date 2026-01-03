@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   rewrites: [
     {
       source: "/api/:path*",
